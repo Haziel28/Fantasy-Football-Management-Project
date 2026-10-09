@@ -1,52 +1,44 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Login</title>
+    <title>Login | Fantasy Football Manager</title>
 
-    <link rel="stylesheet" href="styles.css">
-
+    <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 
-<body>
+<body class="login-page">
 
     <div class="login-box">
 
         <div class="login-header">
-
             <header>Login</header>
-
         </div>
 
         <div class="input-box">
-
-            <input type="text" class="input-field" placeholder="Email" autocomplete="off" required> 
-
+            <input type="text" class="input-field"
+                placeholder="Email" autocomplete="off" required>
         </div>
 
         <div class="input-box">
-
-            <input type="password" class="input-field" placeholder="Password" autocomplete="off" required> 
-
+            <input type="password" class="input-field"
+                placeholder="Password" autocomplete="off" required>
         </div>
 
         <div class="input-submit">
-
-            <button class="submit-btn" id="submit">Sign in</button> 
-
+            <button class="submit-btn" id="submit">Sign in</button>
         </div>
 
         <div class="sign-up-link">
-
-            <p>Don't have an account? <a href="#">Sign Up</a></p> 
-
+            <p>Don't have an account? <a href="#">Sign Up</a></p>
         </div>
+
     </div>
+
 </body>
+
 </html>
