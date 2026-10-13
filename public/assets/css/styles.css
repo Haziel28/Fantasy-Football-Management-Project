@@ -524,3 +524,150 @@ a {
         grid-template-columns: 1fr;
     }
 }
+.dashboard-page .team-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.dashboard-page .team-select {
+    padding: 10px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background-color: white;
+    font-size: 14px;
+    color: #111827;
+}
+
+.dashboard-page .week-nav {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 4px;
+}
+
+.dashboard-page .week-nav a {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 6px;
+    color: #475569;
+    transition: 0.2s;
+}
+
+.dashboard-page .week-nav a:hover {
+    background-color: #f1f5f9;
+}
+
+.dashboard-page .week-nav span {
+    min-width: 70px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.dashboard-page .lineup-stack {
+    display: grid;
+    gap: 22px;
+}
+
+.dashboard-page .panel-total {
+    color: #475569;
+    font-size: 14px;
+}
+
+.dashboard-page .panel-total strong {
+    color: #111827;
+    font-size: 16px;
+}
+
+.dashboard-page .slot-label {
+    width: 70px;
+    font-weight: 600;
+    color: #475569;
+}
+
+.dashboard-page .player-name {
+    font-weight: 500;
+}
+
+.dashboard-page td small {
+    color: #64748b;
+}
+
+.dashboard-page .empty-slot {
+    color: #94a3b8;
+}
+
+.dashboard-page th.num,
+.dashboard-page td.num {
+    text-align: right;
+}
+
+.dashboard-page td.action {
+    text-align: right;
+    width: 130px;
+}
+
+/* Position badges */
+
+.dashboard-page .pos-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.dashboard-page .pos-qb {
+    background-color: #fef2f2;
+    color: #b91c1c;
+}
+
+.dashboard-page .pos-rb {
+    background-color: #f0fdf4;
+    color: #16a34a;
+}
+
+.dashboard-page .pos-wr {
+    background-color: #eff6ff;
+    color: #2563eb;
+}
+
+.dashboard-page .pos-te {
+    background-color: #fffbeb;
+    color: #d97706;
+}
+
+/* Small buttons */
+
+.dashboard-page .btn-small {
+    padding: 7px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background-color: white;
+    color: #111827;
+    font-size: 13px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.dashboard-page .btn-small:hover {
+    background-color: #f1f5f9;
+}
+
+.dashboard-page .btn-small.primary {
+    background-color: #2563eb;
+    border-color: #2563eb;
+    color: white;
+}
+
+.dashboard-page .btn-small.primary:hover {
+    background-color: #1d4ed8;
+}

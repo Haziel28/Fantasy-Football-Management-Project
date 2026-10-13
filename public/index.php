@@ -16,79 +16,11 @@
 
 <body class="dashboard-page">
 
-    <!-- Sidebar -->
-    <nav class="sidebar">
-
-        <div class="logo">
-            <i class="fa-solid fa-football"></i>
-            <span>Fantasy Football<br>Manager</span>
-        </div>
-
-        <ul class="nav-links">
-            <li>
-                <a href="index.html" class="active">
-                    <i class="fa-solid fa-house"></i>
-                    <span>Dashboard</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="#">
-                    <i class="fa-solid fa-users"></i>
-                    <span>My Team</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="#">
-                    <i class="fa-solid fa-user"></i>
-                    <span>Players</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="#">
-                    <i class="fa-solid fa-trophy"></i>
-                    <span>Leagues</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="#">
-                    <i class="fa-solid fa-calendar-days"></i>
-                    <span>Matchups</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="#">
-                    <i class="fa-solid fa-chart-simple"></i>
-                    <span>Standings</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="#">
-                    <i class="fa-solid fa-right-left"></i>
-                    <span>Trade History</span>
-                </a>
-            </li>
-        </ul>
-
-        <div class="sidebar-bottom">
-            <a href="#">
-                <i class="fa-solid fa-user-gear"></i>
-                <span>Profile</span>
-            </a>
-
-            <a href="#">
-                <i class="fa-solid fa-right-from-bracket"></i>
-                <span>Logout</span>
-            </a>
-        </div>
-
-    </nav>
-
+    <?php
+    $activePage = 'dashboard';
+    include __DIR__ . '/../src/sidebar.php';
+    ?>
+    
     <!-- Main body -->
     <div class="main-content">
 
