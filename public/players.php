@@ -1,30 +1,38 @@
 <?php
-// Static layout for Players. Everything below is sample data for now;
-// later this array gets replaced by a real query joining players to rosters.
+require_once __DIR__ . '/../src/league_context.php';
 
-// name, position, NFL team, season points, fantasy team that owns them (null = available)
+$league = current_league();
+$leagueId = $league['id'];
+
+// Sample data. A player exists once; who owns them depends on the league.
+// name, position, NFL team, season points, owners (league id => fantasy team; missing = available)
 $players = [
-    ['Patrick Mahomes',   'QB', 'KC',  'Gridiron Gang',  198.4],
-    ['Jalen Hurts',       'QB', 'PHI', 'Gridiron Gang',  176.0],
-    ['Josh Allen',        'QB', 'BUF', null,             189.2],
-    ['Lamar Jackson',     'QB', 'BAL', 'Blitz Brothers', 201.7],
-    ['Saquon Barkley',    'RB', 'PHI', 'Gridiron Gang',  145.6],
-    ['Derrick Henry',     'RB', 'BAL', 'Gridiron Gang',  120.3],
-    ['Josh Jacobs',       'RB', 'GB',  'Gridiron Gang',   98.1],
-    ['Jahmyr Gibbs',      'RB', 'DET', null,             132.9],
-    ['James Cook',        'RB', 'BUF', null,             118.4],
-    ['Kyren Williams',    'RB', 'LAR', 'Blitz Brothers', 124.0],
-    ['Ja\'Marr Chase',    'WR', 'CIN', 'Gridiron Gang',  161.2],
-    ['CeeDee Lamb',       'WR', 'DAL', 'Gridiron Gang',  139.5],
-    ['Amon-Ra St. Brown', 'WR', 'DET', 'Gridiron Gang',  143.8],
-    ['Tyreek Hill',       'WR', 'MIA', 'Gridiron Gang',  101.7],
-    ['Tee Higgins',       'WR', 'CIN', null,             104.3],
-    ['Jaylen Waddle',     'WR', 'MIA', null,              92.6],
-    ['Travis Kelce',      'TE', 'KC',  'Gridiron Gang',   88.4],
-    ['Sam LaPorta',       'TE', 'DET', null,              79.8],
-    ['Dalton Kincaid',    'TE', 'BUF', null,              64.2],
-    ['Brock Bowers',      'TE', 'LV',  'Blitz Brothers', 112.5],
+    ['Patrick Mahomes',   'QB', 'KC',  198.4, [1 => 'Gridiron Gang',  2 => 'Touchdown Tom']],
+    ['Jalen Hurts',       'QB', 'PHI', 176.0, [1 => 'Gridiron Gang']],
+    ['Josh Allen',        'QB', 'BUF', 189.2, [2 => 'Blitz Brothers']],
+    ['Lamar Jackson',     'QB', 'BAL', 201.7, [1 => 'Blitz Rivals', 2 => 'Gridiron Eight']],
+    ['Saquon Barkley',    'RB', 'PHI', 145.6, [1 => 'Gridiron Gang']],
+    ['Derrick Henry',     'RB', 'BAL', 120.3, [1 => 'Gridiron Gang', 2 => 'Blitz Brothers']],
+    ['Josh Jacobs',       'RB', 'GB',   98.1, [1 => 'Gridiron Gang']],
+    ['Jahmyr Gibbs',      'RB', 'DET', 132.9, [2 => 'Blitz Brothers']],
+    ['James Cook',        'RB', 'BUF', 118.4, []],
+    ['Kyren Williams',    'RB', 'LAR', 124.0, [1 => 'Blitz Rivals']],
+    ["Ja'Marr Chase",     'WR', 'CIN', 161.2, [1 => 'Gridiron Gang', 2 => 'Touchdown Tom']],
+    ['CeeDee Lamb',       'WR', 'DAL', 139.5, [1 => 'Gridiron Gang']],
+    ['Amon-Ra St. Brown', 'WR', 'DET', 143.8, [1 => 'Gridiron Gang', 2 => 'Blitz Brothers']],
+    ['Tyreek Hill',       'WR', 'MIA', 101.7, [1 => 'Gridiron Gang']],
+    ['Tee Higgins',       'WR', 'CIN', 104.3, [2 => 'Gridiron Eight']],
+    ['Jaylen Waddle',     'WR', 'MIA',  92.6, []],
+    ['Travis Kelce',      'TE', 'KC',   88.4, [1 => 'Gridiron Gang']],
+    ['Sam LaPorta',       'TE', 'DET',  79.8, [2 => 'Blitz Brothers']],
+    ['Dalton Kincaid',    'TE', 'BUF',  64.2, []],
+    ['Brock Bowers',      'TE', 'LV',  112.5, [1 => 'Blitz Rivals']],
 ];
+
+// Pick out the owner for the selected league only.
+$players = array_map(function ($p) use ($leagueId) {
+    return [$p[0], $p[1], $p[2], $p[3], $p[4][$leagueId] ?? null];
+}, $players);
 
 // Filter: available (default), rostered, all
 $validFilters = ['available' => 'Available (not on a team)', 'rostered' => 'On a team', 'all' => 'All players'];
@@ -35,14 +43,14 @@ if (!array_key_exists($filter, $validFilters)) {
 
 $shown = array_values(array_filter($players, function ($p) use ($filter) {
     return match ($filter) {
-        'available' => $p[3] === null,
-        'rostered'  => $p[3] !== null,
+        'available' => $p[4] === null,
+        'rostered'  => $p[4] !== null,
         default     => true,
     };
 }));
 
 // Sort by season points, highest first
-usort($shown, fn($a, $b) => $b[4] <=> $a[4]);
+usort($shown, fn($a, $b) => $b[3] <=> $a[3]);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -75,6 +83,10 @@ usort($shown, fn($a, $b) => $b[4] <=> $a[4]);
                 <h1>Players</h1>
 
                 <div class="team-controls">
+                    <!-- League picker (keeps the current status filter) -->
+                    <?php league_select(['status' => $filter]); ?>
+
+                    <!-- Status filter (league comes from the session) -->
                     <form method="get">
                         <select class="team-select" name="status" aria-label="Filter players"
                                 onchange="this.form.submit()">
@@ -94,7 +106,10 @@ usort($shown, fn($a, $b) => $b[4] <=> $a[4]);
                 <div class="panel">
                     <div class="panel-header">
                         <h2><?= htmlspecialchars($validFilters[$filter]) ?></h2>
-                        <p class="panel-total">Showing <strong><?= count($shown) ?></strong> players</p>
+                        <p class="panel-total">
+                            <?= htmlspecialchars($league['name']) ?> &middot;
+                            <strong><?= count($shown) ?></strong> players
+                        </p>
                     </div>
 
                     <div class="table-wrapper">
@@ -115,7 +130,7 @@ usort($shown, fn($a, $b) => $b[4] <=> $a[4]);
                                     </tr>
                                 <?php endif; ?>
 
-                                <?php foreach ($shown as [$name, $pos, $nfl, $owner, $points]): ?>
+                                <?php foreach ($shown as [$name, $pos, $nfl, $points, $owner]): ?>
                                     <tr>
                                         <td>
                                             <div class="player-name"><?= htmlspecialchars($name) ?></div>
@@ -124,13 +139,7 @@ usort($shown, fn($a, $b) => $b[4] <=> $a[4]);
                                         <td>
                                             <span class="pos-badge pos-<?= strtolower($pos) ?>"><?= htmlspecialchars($pos) ?></span>
                                         </td>
-                                        <td>
-                                            <?php if ($owner === null): ?>
-                                                Available
-                                            <?php else: ?>
-                                                <?= htmlspecialchars($owner) ?>
-                                            <?php endif; ?>
-                                        </td>
+                                        <td><?= $owner === null ? 'Available' : htmlspecialchars($owner) ?></td>
                                         <td class="num"><?= number_format($points, 1) ?></td>
                                         <td class="action">
                                             <?php if ($owner === null): ?>
