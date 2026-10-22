@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 /*
  * Lineup rules for a fantasy roster.
- * 15 slots: QB, RB1, RB2, WR1, WR2, TE, FLEX, BN1..BN7
+ * 15 slots: QB, RB1, RB2, WR1, WR2, TE, FLEX, Bench 1-7
  */
 
-// Every slot label, in display order.
+// Every slot label, in order.
 function all_slot_labels(): array
 {
     return ['QB', 'RB1', 'RB2', 'WR1', 'WR2', 'TE', 'FLEX',
@@ -30,11 +30,11 @@ function allowed_positions(string $slot): array
         $slot === 'FLEX'               => ['RB', 'WR', 'TE'],
         str_starts_with($slot, 'BN') && in_array($slot, all_slot_labels(), true)
                                        => ['QB', 'RB', 'WR', 'TE'],
-        default                        => [],   // unknown slot: nothing fits
+        default                        => [], 
     };
 }
 
-// Can a player of this position sit in this slot? A null position means an empty slot, which is always fine.
+// Can a player of this position sit in this slot? A null position means an empty slot.
 function can_fill_slot(string $slot, ?string $position): bool
 {
     if ($position === null) {
@@ -53,8 +53,7 @@ function can_swap(string $slotA, ?string $posA, string $slotB, ?string $posB): b
     return can_fill_slot($slotB, $posA) && can_fill_slot($slotA, $posB);
 }
 
-// Given the current lineup, list the slots a player in $fromSlot could legally swap with.
-// $lineup is [slotLabel => position or null].
+// Given the current lineup, list the slots a player in $fromSlot could swap with.
 function swap_targets(string $fromSlot, array $lineup): array
 {
     $targets = [];

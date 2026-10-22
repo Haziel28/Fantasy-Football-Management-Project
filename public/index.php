@@ -15,7 +15,7 @@
 </head>
 
 <body class="dashboard-page">
-
+    <!-- Resuing the sidebar-->
     <?php
     $activePage = 'dashboard';
     include __DIR__ . '/../src/sidebar.php';

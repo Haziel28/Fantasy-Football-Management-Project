@@ -1,12 +1,11 @@
 <?php
-// Static layout for My Team. Everything below is sample data for now;
-// later these arrays get replaced by real roster rows.
+// Current Static layout for My Team
 
 $week = max(1, min(18, (int) ($_GET['week'] ?? 8)));
 
-$teams = ['Gridiron Gang (Office League)', 'Blitz Brothers (Family League)'];
+$teams = ['League 1', 'League 2'];
 
-// slot, player name, position, NFL team, points (null = empty slot)
+// slot, player name, position, NFL team, points
 $starters = [
     ['QB',   'Patrick Mahomes',   'QB', 'KC',  24.6],
     ['RB1',  'Saquon Barkley',    'RB', 'PHI', 18.2],
@@ -70,7 +69,7 @@ function slot_row(array $slot): void
 </head>
 
 <body class="dashboard-page">
-
+            <!--Reusing the sidebar-->
     <?php
     $activePage = 'team';
     include __DIR__ . '/../src/sidebar.php';
