@@ -14,8 +14,8 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // id => details
 $LEAGUES = [
-    1 => ['id' => 1, 'name' => 'Gridiron Gang (Office League)',  'team' => 'Gridiron Gang',  'teams' => 10, 'record' => '5-2', 'rank' => 2],
-    2 => ['id' => 2, 'name' => 'Blitz Brothers (Family League)', 'team' => 'Blitz Brothers', 'teams' => 8,  'record' => '3-4', 'rank' => 6],
+    1 => ['id' => 1, 'name' => 'League 1',  'team' => 'League 1',  'teams' => 10, 'record' => '5-2', 'rank' => 2],
+    2 => ['id' => 2, 'name' => 'League 2', 'team' => 'League 2', 'teams' => 8,  'record' => '3-4', 'rank' => 6],
 ];
 
 // A page can switch league with ?league=ID (used by the dropdowns).
@@ -37,7 +37,7 @@ function league_select(array $keep = []): void
 {
     global $LEAGUES;
     $current = current_league()['id'];
-    ?>
+?>
     <form method="get">
         <?php foreach ($keep as $k => $v): ?>
             <input type="hidden" name="<?= htmlspecialchars($k) ?>" value="<?= htmlspecialchars((string) $v) ?>">
@@ -51,5 +51,5 @@ function league_select(array $keep = []): void
         </select>
         <noscript><button type="submit" class="btn-small">Go</button></noscript>
     </form>
-    <?php
+<?php
 }
