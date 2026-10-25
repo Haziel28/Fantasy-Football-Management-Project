@@ -753,3 +753,105 @@ a {
     }
 }    
 
+/* ===========================
+   MATCHUPS PAGE
+=========================== */
+
+.dashboard-page .matchups-heading {
+    flex-wrap: wrap;
+}
+
+.dashboard-page .matchups-panel {
+    min-height: 0;
+}
+
+.dashboard-page .matchups-note {
+    color: #64748b;
+    font-size: 13px;
+    margin: -10px 0 20px;
+}
+
+/* Matchup Grid */
+
+.dashboard-page .matchups-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+/* Individual Matchup Card */
+
+.dashboard-page .matchup-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 18px;
+    background: #fff;
+}
+
+/* Highlight User Matchup */
+
+.dashboard-page .matchup-card.my-matchup {
+    border-color: #2563eb;
+    background: #f8fbff;
+}
+
+/* Matchup Card Header */
+
+.dashboard-page .matchup-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    color: #64748b;
+    font-size: 13px;
+    padding-bottom: 12px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.dashboard-page .matchup-card-header i {
+    margin-right: 6px;
+}
+
+/* My Matchup Label */
+
+.dashboard-page .matchup-my-label {
+    background: #dbeafe;
+    color: #1d4ed8;
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Team Rows */
+
+.dashboard-page .matchup-team-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 11px 0;
+}
+
+.dashboard-page .matchup-team-name {
+    font-weight: 500;
+    overflow-wrap: anywhere;
+}
+
+/* Scores */
+
+.dashboard-page .matchup-team-row strong {
+    font-size: 19px;
+    white-space: nowrap;
+}
+
+/* Responsive Layout */
+
+@media (max-width: 750px) {
+
+    .dashboard-page .matchups-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
