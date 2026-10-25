@@ -6,13 +6,13 @@ $week = max(1, min(18, (int) ($_GET['week'] ?? 8)));
 
 // Temporary matchup data until connected to PostgreSQL
 $sampleTeams = $league['id'] === 1
-    ? ['Gridiron Gang', 'Red Zone Raiders', 'Sunday Scaries',
-       'End Zone Elite', 'Fourth & Goal', 'The Blitz',
-       'Touchdown Titans', 'Hail Mary Heroes',
-       'Fantasy Legends', 'The Underdogs']
-    : ['Blitz Brothers', 'Sunday Scaries', 'Red Zone Raiders',
-       'End Zone Elite', 'Fourth & Goal', 'The Blitz',
-       'Touchdown Titans', 'Hail Mary Heroes'];
+    ? ['Haziels team', 'Davids team', 'Matts team',
+       'Ethans team', 'Abels team', 'Lukes team',
+       'Zays team', 'Alfredos team',
+       'bennys team', 'faysals team']
+    : ['Haziels team', 'Davids team', 'Matts team',
+       'Ethans team', 'Abels team', 'Lukes team',
+       'Zays team', 'Alfredos team'];
 
 $matchups = [];
 
