@@ -69,7 +69,7 @@ function slot_row(array $slot): void
 </head>
 
 <body class="dashboard-page">
-            <!--Reusing the sidebar-->
+    <!--Reusing the sidebar-->
     <?php
     $activePage = 'team';
     include __DIR__ . '/../src/sidebar.php';
