@@ -43,12 +43,12 @@ CREATE TABLE Team (
 CREATE TABLE Player (
     player_id INT PRIMARY KEY,
     nfl_team VARCHAR(100) NOT NULL,
-    jersey_number INT NOT NULL,
+    jersey_number INT ,
     player_name VARCHAR(100) NOT NULL,
-    position VARCHAR(5) NOT NULL,
+    player_position VARCHAR(5) NOT NULL,
 
     CONSTRAINT chk_player_position
-        CHECK (position IN ('QB', 'RB', 'WR', 'TE', 'K', 'DEF')),
+        CHECK (player_position IN ('QB', 'RB', 'WR', 'TE', 'K', 'DEF')),
 
     CONSTRAINT chk_jersey_number
         CHECK (jersey_number BETWEEN 0 AND 99)
