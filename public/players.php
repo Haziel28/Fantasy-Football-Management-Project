@@ -4,39 +4,41 @@ require_once __DIR__ . '/../src/league_context.php';
 $league = current_league();
 $leagueId = $league['id'];
 
-// Sample data. A player exists once; who owns them depends on the league.
-// name, position, NFL team, season points, owners (league id => fantasy team; missing = available)
-$players = [
-    ['Patrick Mahomes',   'QB', 'KC',  198.4, [1 => 'League 1', 2 => 'League 2']],
-    ['Jalen Hurts',       'QB', 'PHI', 176.0, [1 => 'League 1']],
-    ['Josh Allen',        'QB', 'BUF', 189.2, [2 => 'League 2']],
-    ['Lamar Jackson',     'QB', 'BAL', 201.7, [1 => 'League 1', 2 => 'League 2']],
-    ['Saquon Barkley',    'RB', 'PHI', 145.6, [1 => 'League 1']],
-    ['Derrick Henry',     'RB', 'BAL', 120.3, [1 => 'League 1', 2 => 'League 2']],
-    ['Josh Jacobs',       'RB', 'GB',   98.1, [1 => 'League 1']],
-    ['Jahmyr Gibbs',      'RB', 'DET', 132.9, [2 => 'League 2']],
-    ['James Cook',        'RB', 'BUF', 118.4, []],
-    ['Kyren Williams',    'RB', 'LAR', 124.0, [1 => 'League 1']],
-    ["Ja'Marr Chase",     'WR', 'CIN', 161.2, [1 => 'League 1', 2 => 'League 2']],
-    ['CeeDee Lamb',       'WR', 'DAL', 139.5, [1 => 'League 1']],
-    ['Amon-Ra St. Brown', 'WR', 'DET', 143.8, [1 => 'League 1', 2 => 'League 2']],
-    ['Tyreek Hill',       'WR', 'MIA', 101.7, [1 => 'League 1']],
-    ['Tee Higgins',       'WR', 'CIN', 104.3, [2 => 'League 2']],
-    ['Jaylen Waddle',     'WR', 'MIA',  92.6, []],
-    ['Travis Kelce',      'TE', 'KC',   88.4, [1 => 'League 1']],
-    ['Sam LaPorta',       'TE', 'DET',  79.8, [2 => 'League 2']],
-    ['Dalton Kincaid',    'TE', 'BUF',  64.2, []],
-    ['Brock Bowers',      'TE', 'LV',  112.5, [1 => 'League 1']],
-];
 
-// Pick out the owner for the selected league only.
-$players = array_map(function ($p) use ($leagueId) {
-    return [$p[0], $p[1], $p[2], $p[3], $p[4][$leagueId] ?? null];
-}, $players);
+require_once __DIR__ . '/../src/db.php';
+
+// Get real NFL players from PostgreSQL
+$stmt = db()->query("
+    SELECT
+        player_id,
+        player_name,
+        position,
+        nfl_team
+    FROM player
+    WHERE sleeper_player_id IS NOT NULL
+    ORDER BY player_name
+");
+
+$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Convert database rows into the format
+// expected by the existing HTML table
+$players = [];
+
+foreach ($rows as $row) {
+    $players[] = [
+        $row['player_name'],
+        $row['position'],
+        $row['nfl_team'] ?? 'FA',
+        0.0,
+        null
+    ];
+}
+
 
 // Filter: available (default), rostered, all
 $validFilters = ['available' => 'Available (not on a team)', 'rostered' => 'On a team', 'all' => 'All players'];
-$filter = $_GET['status'] ?? 'available';
+$filter = $_GET['status'] ?? 'all';
 if (!array_key_exists($filter, $validFilters)) {
     $filter = 'available';
 }
