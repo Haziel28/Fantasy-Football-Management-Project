@@ -7,22 +7,31 @@ $leagueId = $league['id'];
 
 require_once __DIR__ . '/../src/db.php';
 
-// Get real NFL players from PostgreSQL
+
+ // Get real NFL players and their 2026 fantasy points
 $stmt = db()->query("
     SELECT
-        player_id,
-        player_name,
-        position,
-        nfl_team
-    FROM player
-    WHERE sleeper_player_id IS NOT NULL
-    ORDER BY player_name
+        p.player_id,
+        p.player_name,
+        p.position,
+        p.nfl_team,
+        COALESCE(SUM(s.fantasy_points), 0) AS season_points
+    FROM player p
+    LEFT JOIN player_game_stat s
+        ON p.player_id = s.player_id
+        AND s.season_year = 2026
+    WHERE p.sleeper_player_id IS NOT NULL
+    GROUP BY
+        p.player_id,
+        p.player_name,
+        p.position,
+        p.nfl_team
+    ORDER BY season_points DESC, p.player_name
 ");
 
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Convert database rows into the format
-// expected by the existing HTML table
+// Convert database rows into the existing table format
 $players = [];
 
 foreach ($rows as $row) {
@@ -30,10 +39,11 @@ foreach ($rows as $row) {
         $row['player_name'],
         $row['position'],
         $row['nfl_team'] ?? 'FA',
-        0.0,
+        (float) $row['season_points'],
         null
     ];
 }
+
 
 
 // Filter: available (default), rostered, all

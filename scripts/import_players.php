@@ -12,6 +12,11 @@ try {
 
     // Request the player data
     $ch = curl_init($url);
+
+    if ($ch === false) {
+        throw new RuntimeException('Could not initialize cURL.');
+    }
+
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_TIMEOUT => 60,
@@ -20,11 +25,12 @@ try {
 
     $response = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
     curl_close($ch);
 
     if ($response === false || $httpCode !== 200) {
         throw new RuntimeException(
-            "Sleeper API request failed: HTTP $httpCode"
+            "Sleeper API request failed: HTTP $httpCode $curlError"
         );
     }
 
@@ -44,6 +50,7 @@ try {
     $sql = "
         INSERT INTO player (
             sleeper_player_id,
+            gsis_id,
             player_name,
             position,
             nfl_team,
@@ -51,6 +58,7 @@ try {
         )
         VALUES (
             :sleeper_id,
+            :gsis_id,
             :player_name,
             :position,
             :nfl_team,
@@ -58,6 +66,7 @@ try {
         )
         ON CONFLICT (sleeper_player_id)
         DO UPDATE SET
+            gsis_id = EXCLUDED.gsis_id,
             player_name = EXCLUDED.player_name,
             position = EXCLUDED.position,
             nfl_team = EXCLUDED.nfl_team,
@@ -68,6 +77,7 @@ try {
 
     $allowedPositions = ['QB', 'RB', 'WR', 'TE', 'K'];
     $count = 0;
+    $gsisCount = 0;
 
     $pdo->beginTransaction();
 
@@ -90,6 +100,7 @@ try {
             continue;
         }
 
+        // Get the player's jersey number
         $number = $player['number'] ?? null;
 
         if (!is_numeric($number) ||
@@ -100,13 +111,25 @@ try {
             $number = (int)$number;
         }
 
+        // Get the player's NFL team
         $team = $player['team'] ?? null;
         $team = is_string($team) && $team !== ''
             ? $team
             : null;
 
+        // Get the player's GSIS ID
+        $gsisId = $player['gsis_id'] ?? null;
+
+        if (!is_string($gsisId) || trim($gsisId) === '') {
+            $gsisId = null;
+        } else {
+            $gsisId = trim($gsisId);
+        }
+
+        // Save player information into PostgreSQL
         $stmt->execute([
             ':sleeper_id' => (string)$sleeperId,
+            ':gsis_id' => $gsisId,
             ':player_name' => $name,
             ':position' => $position,
             ':nfl_team' => $team,
@@ -114,11 +137,16 @@ try {
         ]);
 
         $count++;
+
+        if ($gsisId !== null) {
+            $gsisCount++;
+        }
     }
 
     $pdo->commit();
 
     echo "Successfully processed $count NFL players!" . PHP_EOL;
+    echo "Players with GSIS IDs: $gsisCount" . PHP_EOL;
 
 } catch (Throwable $e) {
     if (isset($pdo) && $pdo->inTransaction()) {
