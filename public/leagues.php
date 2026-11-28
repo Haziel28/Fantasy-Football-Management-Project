@@ -1,16 +1,102 @@
 <?php
 require_once __DIR__ . '/../src/league_context.php';
+require_once __DIR__ . '/../src/db.php';
 
-// Selecting a league: POST, save to session, then redirect so a refresh
-// doesn't resubmit the form.
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($LEAGUES[(int) ($_POST['league_id'] ?? 0)])) {
+$userId = (int) $_SESSION['user_id'];
+$errors = [];
+
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+// Create a new fantasy league
+if ($_SERVER['REQUEST_METHOD'] === 'POST'
+    && isset($_POST['create_league'])) {
+
+    $leagueName = trim($_POST['league_name'] ?? '');
+    $teamName = trim($_POST['team_name'] ?? '');
+    $seasonYear = 2026;
+
+    if (!hash_equals($_SESSION['csrf_token'],
+        $_POST['csrf_token'] ?? '')) {
+        $errors[] = "Invalid form submission.";
+    }
+
+    if ($leagueName === '' || strlen($leagueName) > 100) {
+        $errors[] = "Enter a valid league name.";
+    }
+
+    if ($teamName === '' || strlen($teamName) > 100) {
+        $errors[] = "Enter a valid team name.";
+    }
+
+    if (!$errors) {
+        $pdo = db();
+
+        try {
+            $pdo->beginTransaction();
+
+            // Create the league
+            $stmt = $pdo->prepare("
+                INSERT INTO league
+                    (league_name, season_year, user_id)
+                VALUES
+                    (:league_name, :season_year, :user_id)
+                RETURNING league_id
+            ");
+
+            $stmt->execute([
+                'league_name' => $leagueName,
+                'season_year' => $seasonYear,
+                'user_id' => $userId
+            ]);
+
+            $leagueId = (int) $stmt->fetchColumn();
+
+            // Create the owner's fantasy team
+            $stmt = $pdo->prepare("
+                INSERT INTO team
+                    (team_name, league_id, user_id)
+                VALUES
+                    (:team_name, :league_id, :user_id)
+            ");
+
+            $stmt->execute([
+                'team_name' => $teamName,
+                'league_id' => $leagueId,
+                'user_id' => $userId
+            ]);
+
+            $pdo->commit();
+
+            header('Location: leagues.php?created=1');
+            exit;
+
+        } catch (PDOException $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+
+            error_log($e->getMessage());
+            $errors[] = "Unable to create league.";
+        }
+    }
+}
+
+// Existing league selection
+if ($_SERVER['REQUEST_METHOD'] === 'POST'
+    && !isset($_POST['create_league'])
+    && isset($LEAGUES[(int) ($_POST['league_id'] ?? 0)])) {
+
     $_SESSION['league_id'] = (int) $_POST['league_id'];
+
     header('Location: leagues.php');
     exit;
 }
 
 $current = current_league();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -43,6 +129,62 @@ $current = current_league();
             <section class="welcome-section">
                 <h1>Leagues</h1>
             </section>
+
+
+<div class="panel" style="margin-bottom: 20px;">
+
+    <div class="panel-header">
+        <h2>Create a League</h2>
+    </div>
+
+    <?php if (isset($_GET['created'])): ?>
+        <p style="color: green;">
+            League created successfully!
+        </p>
+    <?php endif; ?>
+
+    <?php foreach ($errors as $error): ?>
+        <p style="color: red;">
+            <?= htmlspecialchars($error) ?>
+        </p>
+    <?php endforeach; ?>
+
+    <form method="POST">
+
+        <input type="hidden" name="csrf_token"
+            value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+
+        <div class="input-box">
+            <input type="text"
+                name="league_name"
+                class="input-field"
+                placeholder="League Name"
+                maxlength="100"
+                required>
+        </div>
+
+        <div class="input-box">
+            <input type="text"
+                name="team_name"
+                class="input-field"
+                placeholder="Your Team Name"
+                maxlength="100"
+                required>
+        </div>
+
+        <p>Season: 2026</p>
+        <p>Scoring: Full PPR</p>
+
+        <button type="submit"
+            name="create_league"
+            class="btn-small primary">
+            Create League
+        </button>
+
+    </form>
+
+</div>
+
 
             <section class="leagues-layout">
 
